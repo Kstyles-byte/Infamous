@@ -1,0 +1,60 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# .cursorrules
+
+# ================================
+# Overview of Project Meta Files
+# ================================
+
+files:
+  - build.md
+  - task.md
+  - pagelist.md
+location:  /Architecture/
+# ================================
+# build.md
+# ================================
+# Purpose:
+# Contains a high-level summary of the project, including tech stack, current progress, and development goals.
+# Usage:
+# - Reference this file to understand the overall direction of the project.
+# - Update when major design or architecture decisions are made.
+# - Add links to design docs, diagrams, or decision logs if available.
+
+# ================================
+# task.md
+# ================================
+# Purpose:
+# A living task list for all remaining or planned work.
+# Usage:
+# - Use this file to generate or prioritize TODOs.
+# - When adding new features or fixing bugs, check here for related tasks.
+# - Tasks should be grouped by functional areas or pages.
+# - Cursor should mark completed tasks with [x] once done.
+# - Add new tasks automatically when obvious from a code commit or change.
+
+# ================================
+# pagelist.md
+# ================================
+# Purpose:
+# A centralized list of all user-facing routes/pages/screens and their purpose.
+# Usage:
+# - Use this file to keep track of which pages are implemented, pending, or incomplete.
+# - Add notes about dynamic data, required components, or edge cases.
+# - Update whenever a new page is added or removed from the app.
+# - Helps Cursor reason about navigation, routing, and layout consistency.
+
+# ================================
+# General Cursor Behavior
+# ================================
+rules:
+  - Before creating a new file or major feature, check `task.md` and `pagelist.md` to see if it’s already planned or partially done.
+  - Use `build.md` to align with the project’s purpose and avoid drifting from the original scope.
+  - Do not duplicate tasks or pages across files — instead, link or reference as needed.
+  - Update all three files as the project evolves — they are sources of truth for the state of the codebase.
+  - If unsure where a change fits, refer to `build.md` for context or create a task stub in `task.md` for human review.
+
+
