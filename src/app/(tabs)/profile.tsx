@@ -158,7 +158,7 @@ export default function ProfileScreen() {
     
     // Clean up function
     return () => {
-      pointsEventEmitter.removeListener('pointsUpdated', handlePointsUpdated);
+      pointsEventEmitter.off('pointsUpdated', handlePointsUpdated);
     };
   }, []);
 
@@ -563,7 +563,7 @@ export default function ProfileScreen() {
             {posts.map(post => (
               <Post 
                 key={post.id}
-                post={post}
+                post={post as any}
                 currentUserId={session?.user?.id || ''}
               />
             ))}

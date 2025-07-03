@@ -3,9 +3,9 @@
 > Tick things off as you go – feel free to reorder or append as needed.
 
 ## 1. Routing & Navigation
-- [ ] Remove duplicated pages in `app/` vs `src/app/`; settle on a single router directory.
-- [ ] Add stack screens for *Job Details* and *Profile Settings*.
-- [ ] Configure deep-linking & push-route handling (Expo Router linking config).
+- [x] Remove duplicated pages in `app/` vs `src/app/`; settle on a single router directory.
+- [x] Add stack screens for *Job Details* and *Profile Settings*.
+- [x] Configure deep-linking & push-route handling (Expo Router linking config).
 
 ## 2. Authentication
 - [ ] Wire `/login` & `/signup` pages to Supabase Auth (email / password flow).

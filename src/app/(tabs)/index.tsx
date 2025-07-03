@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Image, TextInput, Modal, Platform, ActivityIndicator, FlatList } from 'react-native';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Image, TextInput, Modal, Platform, ActivityIndicator, FlatList, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack } from 'expo-router';
 import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
@@ -72,6 +72,7 @@ interface User {
 
 interface Post {
   id: string;
+  user_id: string;
   content: string;
   type: string;
   title?: string;
@@ -95,6 +96,7 @@ interface Post {
 const MOCK_POSTS: Post[] = [
   {
     id: '1',
+    user_id: '1',
     type: 'update',
     content: 'Just completed a major electrical installation project!',
     created_at: new Date(Date.now() - 3600000).toISOString(),
@@ -111,6 +113,7 @@ const MOCK_POSTS: Post[] = [
   },
   {
     id: '2',
+    user_id: '2',
     type: 'showcase',
     content: 'Check out this plumbing work I did today',
     created_at: new Date(Date.now() - 7200000).toISOString(),
@@ -127,6 +130,7 @@ const MOCK_POSTS: Post[] = [
   },
   {
     id: '3',
+    user_id: '3',
     type: 'job',
     title: 'Need an experienced carpenter',
     content: 'Looking for someone to build custom cabinets',
@@ -239,7 +243,7 @@ export default function HomeScreen() {
     
     // Clean up function
     return () => {
-      pointsEventEmitter.removeListener('pointsUpdated', handlePointsUpdated);
+      pointsEventEmitter.off('pointsUpdated', handlePointsUpdated);
     };
   }, []);
 
@@ -439,36 +443,35 @@ export default function HomeScreen() {
   const createPost = async () => {
     if (!session) {
       console.error('User not logged in');
-      alert('You must be logged in to create a post');
+      Alert.alert('Authentication Required', 'You must be logged in to create a post');
       return;
     }
 
     // Common validation for all post types
     if (!postContent.trim()) {
-      alert('Please enter some content for your post');
+      Alert.alert('Validation', 'Please enter some content for your post');
       return;
     }
 
     // Post type specific validation
     if (postType === POST_TYPES.JOB) {
       if (!postTitle.trim()) {
-        alert('Please enter a job title');
+        Alert.alert('Validation', 'Please enter a job title');
         return;
       }
       
       if (!jobType) {
-        alert('Please select a job type');
+        Alert.alert('Validation', 'Please select a job type');
         return;
       }
       
       if (!location && !(selectedState && selectedArea)) {
-        alert('Please specify a location');
+        Alert.alert('Validation', 'Please specify a location');
         return;
       }
     } else if (postType === POST_TYPES.SHOWCASE && selectedImages.length === 0) {
-      // Optional: Warn user if they try to create a showcase post without images
-      const proceed = confirm('You haven\'t added any images to your showcase. Continue anyway?');
-      if (!proceed) return;
+      // Warn the user but allow them to continue
+      Alert.alert('No Images Added', "You haven't added any images to your showcase.");
     }
 
     setIsCreatingPost(true);
@@ -479,7 +482,7 @@ export default function HomeScreen() {
       
       if (selectedImages.length > 0) {
         // Show upload progress message
-        alert('Uploading images... Please wait.');
+        Alert.alert('Uploading', 'Uploading images... Please wait.');
         
         const uploadPromises = selectedImages.map(uri => uploadImage(uri));
         const results = await Promise.all(uploadPromises);
@@ -488,7 +491,7 @@ export default function HomeScreen() {
         
         if (postType === POST_TYPES.SHOWCASE && selectedImages.length > 0 && imageUrls.length === 0) {
           // All image uploads failed for a showcase post
-          alert('All image uploads failed. Please try again or choose different images.');
+          Alert.alert('Upload Failed', 'All image uploads failed. Please try again or choose different images.');
           setIsCreatingPost(false);
           return;
         }
@@ -525,11 +528,11 @@ export default function HomeScreen() {
         
         // Display user-friendly error message
         if (error.message.includes('violates foreign key constraint')) {
-          alert('Error: There seems to be an issue with your user account. Please log out and log back in.');
+          Alert.alert('Error', 'There seems to be an issue with your user account. Please log out and log back in.');
         } else if (error.message.includes('violates check constraint')) {
-          alert('Error: One or more fields have invalid values. Please check your input.');
+          Alert.alert('Error', 'One or more fields have invalid values. Please check your input.');
         } else {
-          alert(`Error creating post: ${error.message}`);
+          Alert.alert('Error creating post', error.message);
         }
         return;
       }
@@ -560,10 +563,10 @@ export default function HomeScreen() {
         [POST_TYPES.JOB]: 'Job posted successfully!'
       };
       
-      alert(successMessages[postType]);
+      Alert.alert('Success', successMessages[postType]);
     } catch (error: any) {
       console.error('Error in createPost:', error);
-      alert(`Failed to create post: ${error?.message || 'Unknown error'}`);
+      Alert.alert('Failed to create post', error?.message || 'Unknown error');
     } finally {
       setIsCreatingPost(false);
     }
@@ -865,18 +868,7 @@ export default function HomeScreen() {
         
         {/* Use our Post component for rendering the post content and interactions */}
         <Post 
-          post={{
-            id: post.id,
-            content: post.content,
-            created_at: post.created_at,
-            likes_count: post.likes_count,
-            comments_count: post.comments_count,
-            user: {
-              full_name: post.user.full_name || '',
-              avatar_url: post.user.avatar_url || '', // Convert null to empty string to satisfy type
-            },
-            ...(post.title && { title: post.title })
-          }} 
+          post={post as any} 
           currentUserId={session?.user?.id || ''}
         />
         
